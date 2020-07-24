@@ -15,28 +15,28 @@ int main(){
 
   BuddyAllocator alloc;
   BuddyAllocator_init(&alloc,BUDDY_LEVELS,buffer,BUFFER_SIZE,memory,MIN_BUCKET_SIZE);
-/*
+
   BuddyAllocator *alloc_pointer=&alloc;
   BitMap* bit_map_pointer = &(alloc_pointer->bit_map);
   int max=bit_map_pointer->num_bits;
-   for (int j=0; j<=max; j++){
-	printf("%d",BitMap_bit(bit_map_pointer , j));
-  }
-  printf("STOOOOP\n");
-  BitMap_setBit(bit_map_pointer, 135, 0);
+  int res1=BuddyAllocator_getBuddy(&alloc, 2);
+  int res2=BuddyAllocator_getBuddy(&alloc, 3);
 
-  for (int j=0; j<=max; j++){
-	printf("%d",BitMap_bit(bit_map_pointer , j));
-  }
-*/
-
-  int res1=BuddyAllocator_getBuddy(&alloc, 10);
+  //stampa totale
   printf("res1: %d\n", res1);
-  int res2=BuddyAllocator_getBuddy(&alloc, 2);
   printf("res2: %d\n", res2);
-  int res3=BuddyAllocator_getBuddy(&alloc, 1);
-  printf("res3: %d\n", res3);
+   for (int j=0; j<=max; j++){
+	  printf("%d",BitMap_bit(bit_map_pointer , j));
+  }
+  printf("\nfine\n");
 
+  BuddyAllocator_releaseBuddy(&alloc,res1);
+  BuddyAllocator_releaseBuddy(&alloc,res2);
+
+  printf("\npausa\n");
+  for (int j=0; j<=max; j++){
+    printf("%d",BitMap_bit(bit_map_pointer , j));
+  }
 
  	return 1;  
     

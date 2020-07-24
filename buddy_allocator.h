@@ -34,11 +34,11 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
 //BuddyListItem* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
 int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
 
-
+void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node);
 
 // releases an allocated buddy, performing the necessary joins
 // side effect on the internal structures
-//void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, BuddyListItem* item);
+void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node);
 
 //allocates memory
 //void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size);

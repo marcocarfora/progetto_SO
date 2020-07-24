@@ -57,7 +57,7 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
   int num_bits=(1<<(num_levels+1));
   BitMap_init(&(alloc->bit_map), num_bits, buffer_size, buffer);
 
-  for(int i=0; i<=num_bits; i++){
+  for(int i=1; i<=num_bits; i++){
     BitMap_setBit(&(alloc->bit_map), i, 1);     
   }
 
@@ -107,4 +107,45 @@ int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level){
   	}
   }
   return -1;
+}
+
+
+void set_successori_uno(BitMap bit_map,int node){
+  BitMap *bit_map_pointer=&bit_map;
+  if (node>=bit_map_pointer->num_bits) {
+    return;
+  }
+  int successore_sx=node*2;
+  int successore_dx=(node*2)+1;
+  BitMap_setBit(&bit_map, successore_sx , 1);
+  BitMap_setBit(&bit_map, successore_dx , 1);
+  set_successori_uno(bit_map,successore_sx);
+  set_successori_uno(bit_map,successore_dx);
+}
+
+
+void set_padri_uno( BitMap bit_map, int node){
+  int bro=buddyIdx(node);
+  int padre=parentIdx(node);
+
+  if(BitMap_bit(&bit_map, bro)==0) return;
+  BitMap_setBit(&bit_map, padre , 1);  
+  set_padri_uno(bit_map,padre);
+ 
+
+}
+
+void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node){
+  if(node<0) return;
+
+  BitMap *bit_map_pointer = &(alloc->bit_map);
+  int tot_bit = bit_map_pointer->num_bits;
+  assert(node <= tot_bit);
+
+  assert(BitMap_bit(&(alloc->bit_map), node)==0);
+
+  BitMap_setBit(&(alloc->bit_map), node, 1);  
+  set_successori_uno(alloc->bit_map, node);
+  set_padri_uno(alloc->bit_map ,node);
+ 
 }
