@@ -12,11 +12,13 @@ char memory[MEMORY_SIZE];
 
 int main(){
 
+  //printf("%ld\n", sizeof(memory));
+
 
   BuddyAllocator alloc;
   BuddyAllocator_init(&alloc,BUDDY_LEVELS,buffer,BUFFER_SIZE,memory,MIN_BUCKET_SIZE);
 
-  BuddyAllocator *alloc_pointer=&alloc;
+/*  BuddyAllocator *alloc_pointer=&alloc;
   BitMap* bit_map_pointer = &(alloc_pointer->bit_map);
   int max=bit_map_pointer->num_bits;
   int res1=BuddyAllocator_getBuddy(&alloc, 2);
@@ -37,6 +39,14 @@ int main(){
   for (int j=0; j<=max; j++){
     printf("%d",BitMap_bit(bit_map_pointer , j));
   }
+*/
+  void* p1=BuddyAllocator_malloc(&alloc, 100);
+  void* p2=BuddyAllocator_malloc(&alloc, 100);
+  void* p3=BuddyAllocator_malloc(&alloc, 100000);
+  BuddyAllocator_free(&alloc, p1);
+  BuddyAllocator_free(&alloc, p2);
+  BuddyAllocator_free(&alloc, p3);
+  
 
  	return 1;  
     

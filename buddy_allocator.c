@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <assert.h>
-#include <math.h> // for floor and log2
+#include <math.h>// for floor and log2
 #include "buddy_allocator.h"
 //#include "bit_map.h"
 
 // these are trivial helpers to support you in case you want
 // to do a bitmap implementation
 int levelIdx(size_t idx){
-//  return (int)floor(log2(idx));
+  return (int)floor(log2(idx));
 };
 
 int buddyIdx(int idx){
@@ -21,9 +21,9 @@ int parentIdx(int idx){
   return idx/2;
 }
 
-int startIdx(int idx){
-  return (idx-(1<<levelIdx(idx)));
-}
+//int startIdx(int idx){
+//  return (idx-(1<<levelIdx(idx)));
+//}
 
 
 
@@ -148,4 +148,80 @@ void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node){
   set_successori_uno(alloc->bit_map, node);
   set_padri_uno(alloc->bit_map ,node);
  
+}
+
+
+
+void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
+
+  // we determine the level of the page
+  int mem_size=(1<<alloc->num_levels)*alloc->min_bucket_size;
+  int  level=floor(log2(mem_size/(size+8)));
+
+
+  // if the level is too small, we pad it to max
+  if (level>alloc->num_levels)
+    level=alloc->num_levels;
+
+  printf("requested: %d bytes, level %d \n",size, level);
+
+  int node=BuddyAllocator_getBuddy(alloc, level);
+
+  //////////////////////////////
+
+  //STAMPA BITMAP
+   BuddyAllocator *alloc_pointer=alloc;
+   BitMap* bit_map_pointer = &(alloc_pointer->bit_map);
+   int max=bit_map_pointer->num_bits;
+   for (int j=1; j<=max; j++){
+    printf("%d",BitMap_bit(&(alloc_pointer->bit_map) , j));
+   }
+
+
+  /////////////////////////////////////
+
+  if (! node) return 0;	
+  printf("node: %d\n ",node);  
+
+  int buddy_size=mem_size>>level;
+  printf("buddy_size: %d\n ",buddy_size);   
+  printf("alloc->min_bucket_size: %d\n ",alloc->min_bucket_size);
+  //int buddy_size_giorgio=alloc->min_bucket_size;
+  //printf("buddy_size_giorgio: %d\n ",buddy_size_giorgio);   
+  int offset=node%(1<<level);
+  printf("offset: %d\n ",offset);
+  //int offset2=((node-(1<<levelIdx(node))) << (alloc->num_levels-level));
+  //printf("offset2: %d\n ",offset2);
+  int *pointer=(int *)alloc->memory+(offset*buddy_size);
+  printf("pointer: %p\n ",pointer);
+  //void *pointer2 = alloc->memory + ((node-(1<<levelIdx(node))) << (alloc->num_levels-level) )*alloc->min_bucket_size;
+  //printf("pointer2: %p\n ",pointer2);
+  *pointer = node;
+
+  return pointer+4; //poichè la malloc ritorna la quantità allocata
+
+  
+}
+
+
+void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
+  
+  int* p=(int*) mem;
+  p=p-4;
+  BuddyAllocator_releaseBuddy(alloc, *p);
+
+  /////////////////////////////////////
+
+  //STAMPA BITMAP
+   BuddyAllocator *alloc_pointer=alloc;
+   BitMap* bit_map_pointer = &(alloc_pointer->bit_map);
+   int max=bit_map_pointer->num_bits;
+   for (int j=1; j<=max; j++){
+    printf("%d",BitMap_bit(&(alloc_pointer->bit_map) , j));
+   }
+   printf("\n....................");
+
+   /////////////////////////////////////
+
+  
 }

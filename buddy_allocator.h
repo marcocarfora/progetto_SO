@@ -1,5 +1,8 @@
-//#pragma once
+#pragma once
 #include "bit_map.h"
+#include <stdint.h>
+
+
 
 
 #define MAX_LEVELS 16
@@ -34,14 +37,14 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
 //BuddyListItem* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
 int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
 
-void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node);
 
 // releases an allocated buddy, performing the necessary joins
 // side effect on the internal structures
 void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node);
 
 //allocates memory
-//void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size);
+void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size);
 
 //releases allocated memory
-//void BuddyAllocator_free(BuddyAllocator* alloc, void* mem);
+void BuddyAllocator_free(BuddyAllocator* alloc, void* mem);
+
