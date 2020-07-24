@@ -26,6 +26,15 @@ int parentIdx(int idx){
 //}
 
 
+int BuddyAllocator_calcSize(int num_levels) {
+  int num_bits=1<<(num_levels+1);
+  if(num_bits%8 == 0) {
+  	return num_bits/8;
+  }
+  else{
+  	return (num_bits/8)+1;
+  }
+}
 
 
 
@@ -42,18 +51,14 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
   alloc->min_bucket_size=min_bucket_size;
   assert (num_levels<MAX_LEVELS);
   // we need enough memory to handle internal structures
- // assert (buffer_size>=BuddyAllocator_calcSize(num_levels));   ///??????????????????????????????????????????
-
-//  int list_items=1<<(num_levels+1); // maximum number of allocations, used to size the list
-//  int list_alloc_size=(sizeof(BuddyListItem)+sizeof(int))*list_items;
+  assert (buffer_size>=BuddyAllocator_calcSize(num_levels));   
 
   printf("BUDDY INITIALIZING\n");
-  printf("\tlevels: %d", num_levels);
-//  printf("\tmax list entries %d bytes\n", list_alloc_size);
+  printf("\tlevels: %d\n", num_levels);
   printf("\tbucket size:%d\n", min_bucket_size);
   printf("\tmanaged memory %d bytes\n", (1<<num_levels)*min_bucket_size);
   
-
+  
   int num_bits=(1<<(num_levels+1));
   BitMap_init(&(alloc->bit_map), num_bits, buffer_size, buffer);
 
@@ -70,6 +75,8 @@ void set_antenati(BitMap bit_map,int node){
 		return;
 	}
 	int padre=parentIdx(node);
+	if (BitMap_bit(&bit_map,padre)==0)return;
+	printf("--->setting to zero the node: %d, level: %d\n\n",padre,levelIdx(padre));  		
 	BitMap_setBit(&bit_map, padre , 0);
 	set_antenati(bit_map,padre);
 }
@@ -81,7 +88,7 @@ void set_successori(BitMap bit_map,int node){
 	}
 	int successore_sx=node*2;
 	int successore_dx=(node*2)+1;
-	BitMap_setBit(&bit_map, successore_sx , 0);
+	BitMap_setBit(&bit_map, successore_sx , 0);	
 	BitMap_setBit(&bit_map, successore_dx , 0);
 	set_successori(bit_map,successore_sx);
 	set_successori(bit_map,successore_dx);
@@ -130,6 +137,7 @@ void set_padri_uno( BitMap bit_map, int node){
 
   if(BitMap_bit(&bit_map, bro)==0) return;
   BitMap_setBit(&bit_map, padre , 1);  
+  printf("--->setting to one the node: %d, level: %d \n\n",padre,levelIdx(padre));  		
   set_padri_uno(bit_map,padre);
  
 
@@ -145,11 +153,14 @@ void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node){
   assert(BitMap_bit(&(alloc->bit_map), node)==0);
 
   BitMap_setBit(&(alloc->bit_map), node, 1);  
+
+  printf("\nsetting requested node:\n");
+  printf("--->setting to one the node: %d, level: %d \n\n",node,levelIdx(node));  		
   set_successori_uno(alloc->bit_map, node);
+  printf("setting predecessors:\n");
   set_padri_uno(alloc->bit_map ,node);
  
 }
-
 
 
 void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
@@ -163,55 +174,55 @@ void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
   if (level>alloc->num_levels)
     level=alloc->num_levels;
 
-  printf("requested: %d bytes, level %d \n",size, level);
+  printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+  printf("\nrequested: %d bytes, level %d \n",size, level);
 
+  printf("\nsetting predecessors:\n");
   int node=BuddyAllocator_getBuddy(alloc, level);
-
-  //////////////////////////////
-
-  //STAMPA BITMAP
+  
+  
+/*
+ //STAMPA BITMAP
    BuddyAllocator *alloc_pointer=alloc;
    BitMap* bit_map_pointer = &(alloc_pointer->bit_map);
    int max=bit_map_pointer->num_bits;
    for (int j=1; j<=max; j++){
     printf("%d",BitMap_bit(&(alloc_pointer->bit_map) , j));
    }
-
-
-  /////////////////////////////////////
+*/
 
   if (! node) return 0;	
-  printf("node: %d\n ",node);  
 
   int buddy_size=mem_size>>level;
-  printf("buddy_size: %d\n ",buddy_size);   
-  printf("alloc->min_bucket_size: %d\n ",alloc->min_bucket_size);
-  //int buddy_size_giorgio=alloc->min_bucket_size;
-  //printf("buddy_size_giorgio: %d\n ",buddy_size_giorgio);   
+
   int offset=node%(1<<level);
-  printf("offset: %d\n ",offset);
-  //int offset2=((node-(1<<levelIdx(node))) << (alloc->num_levels-level));
-  //printf("offset2: %d\n ",offset2);
+
   int *pointer=(int *)alloc->memory+(offset*buddy_size);
-  printf("pointer: %p\n ",pointer);
-  //void *pointer2 = alloc->memory + ((node-(1<<levelIdx(node))) << (alloc->num_levels-level) )*alloc->min_bucket_size;
-  //printf("pointer2: %p\n ",pointer2);
+
   *pointer = node;
+  
+  printf("\nsetting requested node:\n");
+  printf("--->setting to zero the node: %d, level: %d, start: %p, size: %d\n\n",node,level, pointer+4, size);  		
 
-  return pointer+4; //poichè la malloc ritorna la quantità allocata
-
+  return pointer+4; 
   
 }
 
 
 void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
-  
+
+  printf("\nfreeing: %p \n",mem);
+
   int* p=(int*) mem;
   p=p-4;
   BuddyAllocator_releaseBuddy(alloc, *p);
 
-  /////////////////////////////////////
+  printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
+ 
+
+
+/*
   //STAMPA BITMAP
    BuddyAllocator *alloc_pointer=alloc;
    BitMap* bit_map_pointer = &(alloc_pointer->bit_map);
@@ -220,8 +231,7 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
     printf("%d",BitMap_bit(&(alloc_pointer->bit_map) , j));
    }
    printf("\n....................");
-
-   /////////////////////////////////////
+*/
 
   
 }

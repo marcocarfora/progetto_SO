@@ -34,7 +34,6 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
 // returns (allocates) a buddy at a given level.
 // side effect on the internal structures
 // 0 id no memory available
-//BuddyListItem* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
 int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
 
 
