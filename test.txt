@@ -1,0 +1,22 @@
+-test 1:
+allocated two equal blocks and a bigger one
+
+-test2:
+allocated a too big block
+allocation of the whole memory, so the allocation of another block fail
+
+-test3:
+allocated 5 blocks of 2nd level, so the last one fail
+
+-test4:
+requested 2nd level block and 1st level block
+
+-test5:
+allocated a block of level 0, deallocated this one, allocated a smaller block
+(so it test that when memory is deallocated it's available again)
+
+-test6:
+deallocation of a block two times
+
+-test7:
+when you allocate a block, you can't allocate an ancestor one but tou can get a successor one 
