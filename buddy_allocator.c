@@ -212,10 +212,10 @@ void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
   int offset=node%(1<<level);
 
   //int *pointer = (int*) alloc->memory + ((node-(1<<levelIdx(node))) << (alloc->num_levels-level) )*alloc->min_bucket_size;
-  char *pointer=alloc->memory+(offset*buddy_size);
+  //char *pointer=alloc->memory+(offset*buddy_size);
 
   printf("\nsetting requested node:\n");
-  int *p =(int*) pointer;
+  int *p =(int*)(alloc->memory+(offset*buddy_size));
   *p = node;
   printf("--->setting to zero the node: %d, level: %d, start: %p, size: %d\n\n",node,level, p+4, size);  		
 
