@@ -2,16 +2,21 @@
 #include "bit_map.h"
 #include <stdio.h>
 
-// returns the number of bytes to store bits booleans
+
 int BitMap_getBytes(int bits){
-  return bits/8 + (bits%8)!=0;
+   if(bits%8 == 0) {
+    return bits/8;
+  }
+  else{
+    return (bits/8)+1;
+  }
 }
 
 // initializes a bitmap on an external array
-void BitMap_init(BitMap* bit_map, int num_bits, int buffer_size, uint8_t* buffer){
+void BitMap_init(BitMap* bit_map, int num_bits, uint8_t* buffer){
   bit_map->buffer=buffer;
   bit_map->num_bits=num_bits;
-  bit_map->buffer_size=buffer_size;
+  bit_map->buffer_size=BitMap_getBytes(num_bits);
 
 }
 
@@ -20,7 +25,8 @@ void BitMap_init(BitMap* bit_map, int num_bits, int buffer_size, uint8_t* buffer
 void BitMap_setBit(BitMap* bit_map, int bit_num, int status){
   // get byte
   int byte_num=bit_num>>3;
-  assert(byte_num<bit_map->buffer_size);
+  if(byte_num>=bit_map->buffer_size) return;
+  //assert(byte_num<bit_map->buffer_size);
   int bit_in_byte=7-(bit_num&0x07);  //MODIFICA QUI 07
   if (status) {
     bit_map->buffer[byte_num] |= (1<<bit_in_byte);
