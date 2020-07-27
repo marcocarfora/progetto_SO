@@ -18,7 +18,7 @@ int main(){
   printf("***end initialization***\n");
 
  
-  void* p1=BuddyAllocator_malloc(&alloc, 1048567);
+  void* p1=BuddyAllocator_malloc(&alloc, 1048580);
   void* p2=BuddyAllocator_malloc(&alloc, 1048568);
   void* p3=BuddyAllocator_malloc(&alloc, 40000);
 

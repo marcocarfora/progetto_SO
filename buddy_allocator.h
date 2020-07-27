@@ -15,14 +15,15 @@ typedef struct  {
 } BuddyAllocator;
 
 
+//mc: recursive fucntion to set to 0 ancestors of a node
 void set_antenati(BitMap bit_map,int node);
+//mc :recursive fucntion to set to 0 ancestors of a node
 void set_successori(BitMap bit_map,int node);
 
 // computes the size in bytes for the buffer of the allocator
 int BuddyAllocator_calcSize(int num_levels);
 
-
-// initializes the buddy allocator, and checks that the buffer is large enough
+// cg: initializes the buddy allocator
 void BuddyAllocator_init(BuddyAllocator* alloc,
                          int num_levels,
                          uint8_t* buffer,
@@ -30,20 +31,15 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
                          char* memory,
                          int min_bucket_size);
 
-
-// returns (allocates) a buddy at a given level.
-// side effect on the internal structures
-// 0 id no memory available
+//mc: return a free node in the requested level of the tree
 int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
 
-
-// releases an allocated buddy, performing the necessary joins
-// side effect on the internal structures
+//cg: it sets to 1 the requested node in the buffer
 void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int node);
 
-//allocates memory
+//mc: it returns the number of a free node where allocate memory
 void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size);
 
-//releases allocated memory
+//mc: it deallocates a memory
 void BuddyAllocator_free(BuddyAllocator* alloc, void* mem);
 

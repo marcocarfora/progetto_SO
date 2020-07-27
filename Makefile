@@ -1,5 +1,5 @@
 CC=gcc
-CCOPTS=--std=gnu99 -Wall -D_LIST_DEBUG_ 
+CCOPTS=--std=gnu99 -Wall -D_LIST_DEBUG_ -g
 AR=ar
 
 OBJS=bit_map.o\

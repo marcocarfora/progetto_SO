@@ -22,7 +22,7 @@ deallocation of a block two times
 when you allocate a block, you can't allocate an ancestor one but you can get a successor one 
 
 -test8:
-allocation of two 2nd level blocks, so the allocation of a 1st level block fail
+allocation of two 1st level blocks, so the allocation of a level 0 block fail
 
 -test9:
 allocation of block 4,5,6, so the request for the 3rd block fail; when block 6 is released you can alloc block 3

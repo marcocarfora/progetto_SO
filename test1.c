@@ -21,7 +21,7 @@ int main(){
   void* p1=BuddyAllocator_malloc(&alloc, 100);
   void* p2=BuddyAllocator_malloc(&alloc, 100);
   void* p3=BuddyAllocator_malloc(&alloc, 100000);
-  printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+  printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
   BuddyAllocator_free(&alloc, p1);
   BuddyAllocator_free(&alloc, p2);
